@@ -1,0 +1,233 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"dis",
+				"dispatch"
+			],
+			[
+				"back",
+				"background-color"
+			],
+			[
+				"ui-",
+				"ui-layout-west"
+			],
+			[
+				"marg",
+				"margin-top"
+			],
+			[
+				"mar",
+				"margin"
+			],
+			[
+				"displ",
+				"display"
+			],
+			[
+				"in",
+				"inline-block"
+			],
+			[
+				"app",
+				"appurl"
+			],
+			[
+				"t",
+				"True"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"contents": "#!/usr/bin/python\n\n# Backup script for direct s3 backups \n# 0 3 * * * /usr/bin/python /srv/bamon/backup/backup.py >> /dev/null 2>&1\n\nimport subprocess \nimport os\nimport sys\nimport re\nimport urllib2\nimport json\nimport base64\nimport time\nimport glob\n\n\ndef wpoven_report(site):\n	print \"Error \"+ site\n	urllib2.Request( \"https://wpoven.com/sites/backups/reportError/\"+base64.b64encode(site) ) \n	return\n\nold_count = 3\ntemp_dir = \"/srv/stmp/\"\n\nif not os.path.isdir(temp_dir):\n	os.makedirs(temp_dir)\n	\n\n#all sites on system \n\nfor site in os.listdir('/srv/www'):\n	if site.find('.') > -1:\n		site_path = '/srv/www/'+site+'/public_html/'\n\n		if ( site.find (\"stageing\") > -1) :\n			 continue \n\n		# remove old files 	 \n		file_num = 1\n		oldfiles = sorted( glob.glob(temp_dir+site+\"*.gz\") , key=os.path.getmtime , reverse=True)\n\n		for oldfile in oldfiles:\n			file_num += 1\n			if(file_num > old_count):\n				print \"Removing \"+oldfile\n				os.remove (oldfile)\n\n		# backup things 	\n		if( os.path.isdir( site_path ) ) :\n			#read database file and dump database\n			if ( os.path.isfile(site_path + 'wp-config.php' ) ):\n				f = open( site_path + 'wp-config.php' )\n				file_content = f.read()\n				pattern = re.compile(r'DB_NAME[\\'\\s,]+(.*?)\\'')\n				match = pattern.search(file_content).groups()\n				db_name = match[0]\n				\n				pattern = re.compile(r'DB_USER[\\'\\s,]+(.*?)\\'')\n				match = pattern.search(file_content).groups()\n				db_user = match[0]\n\n				pattern = re.compile(r'DB_PASSWORD[\\'\\s,]+(.*?)\\'')\n				match = pattern.search(file_content).groups()\n				db_password = match[0]\n\n				database_file = temp_dir+site+'.database.sql'\n				'''database_file = open(temp_dir+site+'.database.sql','w')\n				proc = subprocess.Popen(['mysqldump','-u'+db_user,'-p'+db_password,db_name],stdout=subprocess.PIPE)\n				for line in proc.stdout:\n					database_file.write(line)\n				proc.wait()'''\n\n				dump_command = \"mysqldump -u%s -p%s %s > %s\"%(db_user,db_password,db_name,database_file )\n					\n				print dump_command\n			\n				if ( os.system ( dump_command ) > 0 ):\n					wpoven_report(site)\n					continue	\n				\n			\n			# Lets zip up everything \n\n			uploadfile =  site+'_'+time.strftime('%Y-%m-%d_%H-%M',time.gmtime())+'.tar.gz'\n			uploadfile_path = temp_dir + uploadfile\n\n			'''f = open(os.devnull,\"w\")\n			subprocess.call(['tar','-zcvf',uploadfile_path,temp_dir+site+'.database.sql','-C/srv/www/'+site,'public_html/'],stdout=f)'''\n\n\n			compress_command = \"tar -zcf %s -C%s %s.database.sql -C/srv/www/%s public_html\"%(uploadfile_path,temp_dir,site,site)\n\n			print compress_command\n\n			if ( os.system ( compress_command ) > 0 ):\n                        	wpoven_report(site)\n                                continue\n\n			\n			#  get  user  id from server \n			info_url = 'https://wpoven.com/sites/backups/getInfo/'+base64.b64encode(site)\n			\n			req = urllib2.urlopen(info_url)\n\n			response = json.load(req)\n\n			if(response['status'] == 'Success'):\n				#lets post it to amazon\n\n				print \"Uploading File\"\n\n				upload_command = 'curl  -S -F \"key=%s/%s\" -F \"acl=public-read\" -F \"AWSAccessKeyId=%s\" -F \"Policy=%s\" -F \"Signature=%s\" -F \"file=@%s\" http://wpoven.s3.amazonaws.com/' % ( response['user_id'] , uploadfile ,response['AWSAccessKeyId'] ,response['policy'] , response['signature'], uploadfile_path )\n\n				print upload_command\n				if ( os.system( upload_command ) > 0 ):\n					wpoven_report(site)\n			\n",
+			"file": "/C/Users/Vikas/AppData/Local/Temp/fz3temp-1/backup.py",
+			"file_size": 3352,
+			"file_write_time": 130379203123038442,
+			"settings":
+			{
+				"buffer_size": 3352,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 0.0
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/C/Users/Vikas/Dropbox/projects/seriallog/views/config.tpl",
+		"/C/Users/Vikas/Dropbox/projects/seriallog/views/default.tpl",
+		"/C/Users/Vikas/Dropbox/projects/seriallog/views/menu.tpl",
+		"/C/Users/Vikas/Dropbox/projects/seriallog/media/style.css",
+		"/C/Users/Vikas/Dropbox/projects/seriallog/server.py",
+		"/C/Users/Vikas/Dropbox/projects/seriallog/views/header.tpl",
+		"/C/Users/Vikas/Dropbox/projects/seriallog/views/config.php",
+		"/C/Users/Vikas/Dropbox/projects/seriallog/views/footer.tpl",
+		"/C/Users/Vikas/Dropbox/projects/seriallog/functions.py",
+		"/C/Users/Vikas/Dropbox/projects/seriallog/bottle.py",
+		"/C/Users/Vikas/Dropbox/projects/seriallog/views/help.tpl",
+		"/C/Users/Vikas/Dropbox/projects/seriallog/views/login.tpl",
+		"/C/Users/Vikas/Dropbox/webserver/http/liveide/main.py",
+		"/C/Users/Vikas/Dropbox/webserver/http/liveide/views/layout.tpl",
+		"/C/Users/Vikas/Dropbox/webserver/http/liveide/controllers/default.py",
+		"/C/Users/Vikas/Dropbox/webserver/http/liveide/controllers/assets.py",
+		"/C/Users/Vikas/Dropbox/webserver/http/liveide/assets/css/liveide.css",
+		"/C/Users/Vikas/Dropbox/webserver/http/liveide/bottle.py",
+		"/C/Users/Vikas/Dropbox/webserver/http/liveide/assets/css/layout.css",
+		"/C/Users/Vikas/Dropbox/webserver/http/liveide/assets/js/custom.js",
+		"/C/Users/Vikas/Dropbox/webserver/http/liveide/views/test.tpl"
+	],
+	"find":
+	{
+		"height": 34.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"Files",
+			"fluid",
+			";\n",
+			"    </",
+			">\n"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "/C/Users/Vikas/AppData/Local/Temp/fz3temp-1/backup.py",
+					"settings":
+					{
+						"buffer_size": 3352,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1943,
+								1943
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 810.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 0.0
+	},
+	"input":
+	{
+		"height": 331.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"replace":
+	{
+		"height": 0.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 255.0,
+	"status_bar_visible": true
+}
