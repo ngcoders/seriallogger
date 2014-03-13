@@ -121,7 +121,7 @@
             <tr>
                 <td>{{file}}</td>
                 <td>                
-                % size = functions.sizeof_fmt ( os.path.getsize('dump/'+file) )
+                % size = functions.sizeof_fmt ( os.path.getsize('logs/'+file) )
                 {{size}}
                 </td>
                 <td style="text-align:center;">

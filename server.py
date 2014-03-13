@@ -21,19 +21,21 @@ class serverActivity(threading.Thread):
                 _mStateLed_onGpio =  gpioState
 		_mgpioPinNumber = gpioNumber
                 
-        def run(self):           
-                if ( self.isProcessor != 0 ):
-                        # rpi Code executes/ goes here
-                        import RPi.GPIO as GPIO_RPI                                
-			#GPIO_RPI.setmode( GPIO_RPI.BOARD )
-                        GPIO_RPI.setup(self._mgpioPinNumber, GPIO_RPI.OUT )
-                        GPIO_RPI.output(self._mgpioPinNumber, 0)# on LED.                                                                        
-                        time.sleep( 10 )
-                        GPIO_RPI.output(self._mgpioPinNumber, 1)# off the LED
-                else:                        
-                        print "this is printing"
-                        time.sleep(5)
-                        print "This ends here"
+        def run(self):
+		try:
+			if ( self.isProcessor != 0 ):
+                        	# rpi Code executes/ goes here
+                        	import RPi.GPIO as GPIO_RPI                                
+				GPIO_RPI.setmode( GPIO_RPI.BOARD )
+                        	GPIO_RPI.setup(self._mgpioPinNumber, GPIO_RPI.OUT )
+                        	GPIO_RPI.output(self._mgpioPinNumber, 0)# on LED.                                                                        
+                        	time.sleep( 10 )
+                        	GPIO_RPI.output(self._mgpioPinNumber, 1)# off the LED
+                	else:                        
+                        	print "This is not a arm machine"
+                        	time.sleep(5)
+		except:
+			print sys.exc_info()
                                 
 
 class allTimeSystemDevice(threading.Thread):
@@ -61,13 +63,17 @@ class allTimeSystemDevice(threading.Thread):
                               # alwasy on till this thread is on
                         else:
                                 print "This is always on as the server is On."
+				print "      Detected That this is not an arm machine"
 
                 except:
                         print "Something goes wrong"
 			print sys.exc_info()
                         
-
-thisDevice = allTimeSystemDevice(12,1)
+#take server gpio data setting from setting config file
+configs = ConfigParser.ConfigParser()
+configs.read("settings.cfg")
+server_gpio = str(configs.get("generic_config","server_gpio"))
+thisDevice = allTimeSystemDevice(server_gpio,1)# on the server indication led, same for logger.
 thisDevice.start()
 
 server = Bottle()
@@ -79,16 +85,15 @@ server = Bottle()
 def server_static(filepath):
 	curDir = commands.getoutput('pwd')
 	curDir += '/media/'
-	print curDir
+	#print curDir
         return static_file(filepath, root= curDir)
 
 
 @server.route('/')
 def default() :
 	
-        #files = os.listdir('dump/')
-	print functions.runThisCommand('pwd')
-	files = os.listdir('dump/')
+        #print functions.runThisCommand('pwd')print current working directory
+	files = os.listdir('logs/')
       
         CurTime = functions.getRequiredFieldData('curtime')
         upSysTime = functions.getRequiredFieldData( 'upTime' )
@@ -120,11 +125,16 @@ def download(filename) :
         # IPC to write
 
         # code for rPi goes here, to hold led for a while
+        try:
+		conFigs = ConfigParser.ConfigParser()
+		conFigs.read("settings.cfg")
+		dwn_gpioLed = int(conFigs.get("generic_config","dwn_gpio"))
+        	serverDAct = serverActivity(dwn_gpioLed, 1)
+        	serverDAct.start()
+	except:
+		print sys.exc_info()
         
-        serverDAct = serverActivity(16, 1)
-        serverDAct.start()
-        
-        return static_file(filename, root= 'dump/', download=filename)
+        return static_file(filename, root= 'logs/', download=filename)
 
 @server.route('/truncate/<filename>')
 def truncate(filename) :
@@ -139,7 +149,7 @@ def truncate(filename) :
 @server.route('/delete/<filename>')
 def truncate(filename) :
 	# Truncate file
-	os.remove('/logs/'+filename)
+	os.remove('logs/'+filename)
 	redirect('/')	
 
 @server.route('/help') 
@@ -163,6 +173,11 @@ def save_config() :
         #redirect('/') to redirect to main page
         # below code can be optimized by looping, although three ports are fixed and not going to change, hence kpt the code static
 
+	configBefore = ConfigParser.ConfigParser()
+	configBefore.read("settings.cfg")
+	#print configBefore.sections()
+	#time.sleep( 2 )
+
         configParsingInst = ConfigParser.ConfigParser()
         configFile = open("settings.cfg",'w')
 
@@ -175,16 +190,33 @@ def save_config() :
 
         configParsingInst.write(configFile)
         configFile.close()
+	
+	#now append the rest of the changes again back in to file
+	configAfter = ConfigParser.ConfigParser()
+	configAfterFile = open("settings.cfg","a")
+	
+	secNameAfter = configBefore.sections()[-1]
+	#print "   " + str(secNameAfter)
+	#time.sleep( 5 )
+	configAfter.add_section(secNameAfter)
+	configAfter.set(secNameAfter, "server_gpio", "12")
+	configAfter.set(secNameAfter,"dwm_gpio", "16")
+
+	configAfter.write(configAfterFile)
+	configAfterFile.close()
+
+	#end of writing config settings file with all information
+
 	procDataFrom = str(commands.getoutput("ps -aux | grep logger"))
-	print "   " + procDataFrom
+	#print "   " + procDataFrom
 	proc_data = re.search(r"root\s+(\w+)", procDataFrom)
-	print "   " + proc_data.group()
-	print "   " + proc_data.group(1)
+	#print "   " + proc_data.group()
+	#print "   " + proc_data.group(1)
 	
 	os.system("kill -9 " + str(proc_data.group(1)))	
 	#time.sleep(1)#wait for a second please
 	os.system("python logger.py & ")
-	os.system("ps -aux | grep logger &")
+	#os.system("ps -aux | grep logger &")
 
 	redirect('/')
 

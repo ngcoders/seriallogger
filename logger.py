@@ -22,16 +22,17 @@ class allPortDevice(threading.Thread):
                 	__IsArmProcessor__ = functions.isProcessorType()                        
 			#print "    " + str( __IsArmProcessor__ )
                         # on the led state of Led 1
-                	if (__IsArmProcessor__ != 0):
+                	if (int(__IsArmProcessor__) != 0):
 				import RPi.GPIO as GPIO_RPI                                
 				#GPIO_RPI.setwarnings( Flase )
 				GPIO_RPI.setmode( GPIO_RPI.BOARD )
+				GPIO_RPI.setwarnings( 0 )
                         	GPIO_RPI.setup(int(self.gpioNum), GPIO_RPI.OUT )
-                        	GPIO_RPI.output(int(self.gpioNum), self.isState)
+                        	GPIO_RPI.output(int(self.gpioNum), int(self.isState))
                                 # isState is 1, true, High.change thsi data according to led config. high or low.
 				# alwasy on till this thread is on
 			else:
-                		print "This is always on till port is open"
+                		print "This is always on till port is open, Identified as this script is not running on Raspberry Pi."
 		except:
 			print "Something goes wrong"
 			print sys.exc_info()
@@ -44,7 +45,7 @@ class logger_thread(threading.Thread):
 		threading.Thread.__init__(self)
 		self.port = port
 		self.baudrate = baudrate
-		self.dumpfile = dumpfile		
+		self.dumpfile = dumpfile
 		
 
 	def run(self):
@@ -56,23 +57,23 @@ class logger_thread(threading.Thread):
 		
 		try:
 			# timeout is necessary
-			print openPortFlag
+			#print openPortFlag
 			infile = serial.Serial(self.port, baud, timeout=1)
 			openPortFlag = 1
-			print self.dumpfile+" : Port opened successfully"
+			print "      " + self.dumpfile+" : Port opened successfully which is on port" + self.port
 		except:
-			print "      " + self.dumpfile+": Error opening port"
+			print "      " + self.dumpfile+": Device not detected on  " + self.port
 			openPortFlag = 0 #false
-			print "      " + str( openPortFlag )
+			#print "      " + str( openPortFlag )
 			# infile = os.open("/dev/ttyUSB0", os.O_NONBLOCK | os.O_RDONLY)
 			# print "opening /dev/ttyUSB0 for now"
 			return
 
 		try:
-			outfile = open(os.path.join("./dump/", self.dumpfile+".log"), "a+")
+			outfile = open(os.path.join("./logs/", self.dumpfile+".log"), "a+")
 			
 		except:
-			print self.dumpfile+":Error opening output file"
+			print "   " + self.dumpfile+":Error opening output file"
 			return
 
 		buf=''
@@ -118,12 +119,13 @@ if __name__ == "__main__":
 	signal.signal(signal.SIGINT, signal_handler)
 	try:
 		theProcessor = functions.isProcessorType()
-		print "     " + str( theProcessor )
+		#print "     " + str( theProcessor )
 		sleep( 5 )
 		if( theProcessor == 1):
 			import RPi.GPIO as gpio_s
-			print "Cleaning up board"		
+			#print "Cleaning up board"		
 			gpio_s.setmode( gpio_s.BOARD )
+			gpio_s.setwarnings( 0 )
 			gpio_s.cleanup()
 			sleep( 5 )
 	except:
@@ -163,10 +165,10 @@ if __name__ == "__main__":
 		t = logger_thread(port, baudrate, section)
 		t.start()
 		thread_list.append(t)
-		sleep( 5 )
-		print "     " + gpioOf
-		print "     " + str(openPortFlag)
-		print "     " + port
+		sleep( 3 )
+		#print "     " + gpioOf
+		#print "     " + str(openPortFlag)
+		#print "     " + port
 		if openPortFlag == 1:
 			th = allPortDevice(gpioOf, 0)
 			th.start()

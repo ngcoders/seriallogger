@@ -7,11 +7,14 @@
 
       <form role="form" class="form-horizontal" method="POST">
   
-	%for section in config.sections():
-	%	section_name = section
+	%secList = config.sections()
+	%del secList[-1]
+	%for section in secList:
+	%	section_name = section		
 	%	device = config.get(section,'device')
 	%	baudrate = config.get(section,'baudrate')
 	%	gpio = config.get(section,'gpio')
+	
 
 	  <div class="panel panel-default">
   		<div class="panel-heading">
