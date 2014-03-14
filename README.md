@@ -24,13 +24,13 @@ This, it will appear /home/serialLogger
 
 + If required,
 - Set up bits of file for execution
-In command prompt,
-log in as root
-> su
-password: xxxx
->cd /etc/init.d/
->chmod 775 launchLog.sh
->reboot
+-In command prompt,
+-log in as root
+	- > su
+	- password: xxxx
+	- >cd /etc/init.d/
+	- >chmod 775 launchLog.sh
+	- >reboot
 
 ============
 
