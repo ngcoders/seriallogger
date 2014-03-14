@@ -75,7 +75,6 @@ configs.read("settings.cfg")
 server_gpio = str(configs.get("generic_config","server_gpio"))
 thisDevice = allTimeSystemDevice(server_gpio,1)# on the server indication led, same for logger.
 thisDevice.start()
-
 server = Bottle()
 #print "Starting Logger Now..."
 #os.system("python /home/serialLogger/logger.py")
@@ -158,8 +157,8 @@ def help() :
 
 @server.route('/reboot')
 def reboot():
-	os.system('reboot')
-
+	os.system("reboot")
+	
 @server.route('/config')  
 def config() :
 
@@ -232,5 +231,5 @@ def do_login():
 
 BaseTemplate.defaults['route'] = request
 
-run(server,reloader=True,host='192.168.0.127',port='8018',debug = True)
+run(server,reloader=True,host="0.0.0.0",port='8080',debug = True)
 
