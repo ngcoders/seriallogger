@@ -12,14 +12,12 @@ import threading, time
 
 class serverActivity(threading.Thread):
         isProcessor = 0
-        _mStateLed_onGpio = 1
-        nCounterforLed = 0
-        nCounter = 0
-	m_gpioPinNumber = 0
-        def __init(self , gpioNumber, gpioState):
+	_mgpioPinNumber = 0
+        def __init__(self , gpioNumber):
+		threading.Thread.__init__(self)
                 self.isProcessor = functions.isProcessorType()                
-                _mStateLed_onGpio =  gpioState
-		_mgpioPinNumber = gpioNumber
+                #_mStateLed_onGpio =  gpioState
+		self._mgpioPinNumber = gpioNumber
                 
         def run(self):
 		try:
@@ -27,14 +25,17 @@ class serverActivity(threading.Thread):
                         	# rpi Code executes/ goes here
                         	import RPi.GPIO as GPIO_RPI                                
 				GPIO_RPI.setmode( GPIO_RPI.BOARD )
-                        	GPIO_RPI.setup(self._mgpioPinNumber, GPIO_RPI.OUT )
-                        	GPIO_RPI.output(self._mgpioPinNumber, 0)# on LED.                                                                        
-                        	time.sleep( 10 )
-                        	GPIO_RPI.output(self._mgpioPinNumber, 1)# off the LED
+				GPIO_RPI.setwarnings(0)
+                        	GPIO_RPI.setup(int(self._mgpioPinNumber), GPIO_RPI.OUT )
+                        	GPIO_RPI.output(int(self._mgpioPinNumber), 0)# on LED.                                                                        
+				print "Led configured"
+                        	time.sleep( 5 )
+                        	GPIO_RPI.output(int(self._mgpioPinNumber), 1)# off the LED
                 	else:                        
-                        	print "This is not a arm machine"
+                        	print "This is not an ARM machine"
                         	time.sleep(5)
 		except:
+			print "Something went wrong at this point, inside serverActivity Module"
 			print sys.exc_info()
                                 
 
@@ -55,14 +56,14 @@ class allTimeSystemDevice(threading.Thread):
                                 import RPi.GPIO as GPIO_RPI    
 				GPIO_RPI.setwarnings( 0 )                            
 				GPIO_RPI.setmode( GPIO_RPI.BOARD )
-                                GPIO_RPI.setup(self._machineStateLED_onGpio, GPIO_RPI.OUT )
+                                GPIO_RPI.setup(int(self._machineStateLED_onGpio), GPIO_RPI.OUT )
 				#print self.isState, self._machineStateLED_onGpio
-                                GPIO_RPI.output(self._machineStateLED_onGpio, self.isState)
-                                # isState is 1, true, High.change thsi data according to led config. high or low.
+                                GPIO_RPI.output(int(self._machineStateLED_onGpio), int(self.isState))
+                                # isState is 0, false, low.change this data according to led config. high or low.
                                 
                               # alwasy on till this thread is on
                         else:
-                                print "This is always on as the server is On."
+                                print "	     This is always on as the server is On."
 				print "      Detected That this is not an arm machine"
 
                 except:
@@ -124,13 +125,14 @@ def download(filename) :
         # IPC to write
 
         # code for rPi goes here, to hold led for a while
-        try:
+	try:    
 		conFigs = ConfigParser.ConfigParser()
 		conFigs.read("settings.cfg")
-		dwn_gpioLed = int(conFigs.get("generic_config","dwn_gpio"))
-        	serverDAct = serverActivity(dwn_gpioLed, 1)
-        	serverDAct.start()
+		dwn_gpioLed = str(conFigs.get("generic_config","dwn_gpio"))
+       		serverDAct = serverActivity(dwn_gpioLed)
+       		serverDAct.start()
 	except:
+		print "Something went wrong at download procedure here"
 		print sys.exc_info()
         
         return static_file(filename, root= 'logs/', download=filename)
@@ -199,7 +201,7 @@ def save_config() :
 	#time.sleep( 5 )
 	configAfter.add_section(secNameAfter)
 	configAfter.set(secNameAfter, "server_gpio", "12")
-	configAfter.set(secNameAfter,"dwm_gpio", "16")
+	configAfter.set(secNameAfter,"dwn_gpio", "16")
 
 	configAfter.write(configAfterFile)
 	configAfterFile.close()
