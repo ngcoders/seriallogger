@@ -1,6 +1,7 @@
 #!/bin/sh
 python --version
-echo
+echo "Bringing up GPS Serial"
+modprobe usbserial vendor=0x09d7 product=0x0100
 echo "Configuring ip address now"
 . /boot/netConfig.dat
 echo "Setting your ip address at "$rasp_ip_addr
