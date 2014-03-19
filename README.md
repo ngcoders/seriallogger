@@ -15,7 +15,7 @@ SerialLogger
 + Configuration file
 	- launchLog.sh
 	Put this file inside /etc/init.d folder. As this file will launch the logger program at startup
-	- netConfig.dat
+	- netConfig.dat - Put this file inside /boot/ folder.
 	In this file you can set up your logger ip address and netmask.
 
 + Installing this source
@@ -29,6 +29,7 @@ SerialLogger
 		- password: xxxx
 		- >cd /etc/init.d/
 		- >chmod 775 launchLog.sh
+		- >update-rc.d launchLog.sh defaults
 		- >reboot
 
 ============
