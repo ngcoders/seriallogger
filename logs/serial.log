@@ -1,0 +1,180 @@
+ecting to 192.168.0.130:21...
+Status:	Connection attempt failed with "ECONNREFUSED - Connection refused by server".
+Error:	Could not connect to server
+Status:	Waiting to retry...
+Status:	Connecting to 192.168.0.130:21...
+Status:	Connection attempt failed with "ECONNREFUSED - Connection refused by server".
+Error:	Could not connect to server
+Status:	Connecting to 192.168.0.130:21...
+Status:	Connection attempt failed with "ECONNREFUSED - Connection refused by server".
+Error:	Could not connect to server
+Status:	Waiting to retry...
+Status:	Connecting to 192.168.0.130:21...
+Status:	Connection attempt failed with "ECONNREFUSED - Connection refused by server".
+Error:	Could not connect to server
+Status:	Delaying connection for 3 seconds due to previously failed connection attempt...
+Status:	Connecting to 192.168.0.130:21...
+Status:	Connection attempt failed with "ECONNREFUSED - Connection refused by server".
+Error:	Could not connect to server
+Status:	Waiting to retry...
+Status:	Connecting to 192.168.0.130:21...
+Status:	Connection attempt failed with "ECONNREFUSED - Connection refused by server".
+Error:	Could not connect to server
+Status:	Connecting to 192.168.0.130...
+Response:	fzSftp started
+Command:	open "root@192.168.0.130" 22
+Command:	Pass: *********
+Status:	Connected to 192.168.0.130
+Status:	Retrieving directory listing...
+Command:	pwd
+Response:	Current directory is: "/root"
+Command:	ls
+Status:	Listing directory /root
+Status:	Calculating timezone offset of server...
+Command:	mtime ".nano_history"
+Response:	1396592745
+Status:	Timezone offsets: Server: 3600 seconds. Local: 19800 seconds. Difference: 16200 seconds.
+Status:	Directory listing successful
+Status:	Retrieving directory listing...
+Command:	cd "/home"
+Response:	New directory is: "/home"
+Command:	ls
+Status:	Listing directory /home
+Status:	Directory listing successful
+Status:	Retrieving directory listing...
+Command:	cd "/home/serialLogger"
+Response:	New directory is: "/home/serialLogger"
+Command:	ls
+Status:	Listing directory /home/serialLogger
+Status:	Directory listing successful
+Status:	Retrieving directory listing...
+Command:	cd "views"
+Response:	New directory is: "/home/serialLogger/views"
+Command:	ls
+Status:	Listing directory /home/serialLogger/views
+Status:	Directory listing successful
+Status:	Connecting to 192.168.0.130...
+Response:	fzSftp started
+Command:	open "root@192.168.0.130" 22
+Command:	Pass: *********
+Status:	Connected to 192.168.0.130
+Status:	Starting download of /home/serialLogger/views/config.tpl
+Command:	cd "/home/serialLogger/views"
+Response:	New directory is: "/home/serialLogger/views"
+Command:	get "config.tpl" "/config.tpl"
+Error:	local: unable to open /config.tpl
+Error:	File transfer failed
+Status:	Starting download of /home/serialLogger/views/config.tpl
+Command:	get "config.tpl" "/config.tpl"
+Error:	local: unable to open /config.tpl
+Error:	File transfer failed
+Status:	Starting download of /home/serialLogger/views/config.tpl
+Command:	get "config.tpl" "/config.tpl"
+Error:	local: unable to open /config.tpl
+Error:	File transfer failed
+Status:	Starting download of /home/serialLogger/views/config.tpl
+Command:	get "config.tpl" "/tmp/fz3temp-1/config.tpl"
+Status:	remote:/home/serialLogger/views/config.tpl => local:/tmp/fz3temp-1/config.tpl
+Status:	File transfer successful, transferred 1.5 KB in 1 second
+Status:	Disconnected from server
+Status:	Connecting to 192.168.0.130...
+Response:	fzSftp started
+Command:	open "root@192.168.0.130" 22
+Command:	Pass: *********
+Status:	Connected to 192.168.0.130
+Status:	Starting upload of /home/annim/reboot.tpl
+Command:	cd "/home/serialLogger/views"
+Response:	New directory is: "/home/serialLogger/views"
+Command:	put "/home/annim/reboot.tpl" "reboot.tpl"
+Status:	local:/home/annim/reboot.tpl => remote:/home/serialLogger/views/reboot.tpl
+Status:	File transfer successful, transferred 230 B in 1 second
+Status:	Disconnected from server
+Status:	Connecting to 192.168.0.130...
+Response:	fzSftp started
+Command:	open "root@192.168.0.130" 22
+Command:	Pass: *********
+Status:	Connected to 192.168.0.130
+Status:	Retrieving directory listing...
+Command:	cd "/home/serialLogger/logs"
+Response:	New directory is: "/home/serialLogger/logs"
+Command:	ls
+Status:	Listing directory /home/serialLogger/logs
+Status:	Directory listing successful
+Status:	Connecting to 192.168.0.130...
+Response:	fzSftp started
+Command:	open "root@192.168.0.130" 22
+Command:	Pass: *********
+Status:	Connected to 192.168.0.130
+Status:	Starting upload of /home/annim/Desktop/serial.log
+Command:	cd "/home/serialLogger/logs"
+Response:	New directory is: "/home/serialLogger/logs"
+Command:	put "/home/annim/Desktop/serial.log" "serial.log"
+Status:	local:/home/annim/Desktop/serial.log => remote:/home/serialLogger/logs/serial.log
+Status:	File transfer successful, transferred 3.1 KB in 1 second
+Status:	Retrieving directory listing...
+Command:	ls
+Status:	Listing directory /home/serialLogger/logs
+Status:	Directory listing successful
+Status:	Disconnected from server
+Error:	Server unexpectedly closed network connection
+Status:	Connecting to 192.168.0.130...
+Response:	fzSftp started
+Command:	open "root@192.168.0.130" 22
+Command:	Pass: *********
+Status:	Connected to 192.168.0.130
+Status:	Retrieving directory listing...
+Command:	cd "/home/serialLogger"
+Response:	New directory is: "/home/serialLogger"
+Command:	ls
+Status:	Listing directory /home/serialLogger
+Status:	Directory listing successful
+Status:	Connecting to 192.168.0.130...
+Response:	fzSftp started
+Command:	open "root@192.168.0.130" 22
+Command:	Pass: *********
+Status:	Connected to 192.168.0.130
+Status:	Starting download of /home/serialLogger/logger.py
+Command:	cd "/home/serialLogger"
+Response:	New directory is: "/home/serialLogger"
+Command:	get "logger.py" "/home/annim/Desktop/logger.py"
+Status:	remote:/home/serialLogger/logger.py => local:/home/annim/Desktop/logger.py
+Status:	File transfer successful, transferred 4.9 KB in 1 second
+Status:	Disconnected from server
+Status:	Connecting to 192.168.0.130...
+Response:	fzSftp started
+Command:	open "root@192.168.0.130" 22
+Command:	Pass: *********
+Status:	Connected to 192.168.0.130
+Status:	Starting upload of /home/annim/Desktop/logger.py
+Command:	cd "/home/serialLogger"
+Response:	New directory is: "/home/serialLogger"
+Command:	put "/home/annim/Desktop/logger.py" "logger.py"
+Status:	local:/home/annim/Desktop/logger.py => remote:/home/serialLogger/logger.py
+Status:	File transfer successful, transferred 4.1 KB in 1 second
+Status:	Disconnected from server
+Status:	Retrieving directory listing...
+Command:	cd "logs"
+Error:	Failed to retrieve directory listing
+Status:	Connecting to 192.168.0.130...
+Response:	fzSftp started
+Command:	open "root@192.168.0.130" 22
+Command:	Pass: *********
+Status:	Connected to 192.168.0.130
+Status:	Retrieving directory listing...
+Command:	cd "/home/serialLogger"
+Response:	New directory is: "/home/serialLogger"
+Command:	cd "logs"
+Response:	New directory is: "/home/serialLogger/logs"
+Command:	ls
+Status:	Listing directory /home/serialLogger/logs
+Status:	Directory listing successful
+Status:	Connecting to 192.168.0.130...
+Response:	fzSftp started
+Command:	open "root@192.168.0.130" 22
+Command:	Pass: *********
+Status:	Connected to 192.168.0.130
+Status:	Starting download of /home/serialLogger/logs/serial.log
+Command:	cd "/home/serialLogger/logs"
+Response:	New directory is: "/home/serialLogger/logs"
+Command:	get "serial.log" "/home/annim/Desktop/serial.log"
+Status:	remote:/home/serialLogger/logs/serial.log => local:/home/anni
