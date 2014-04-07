@@ -94,6 +94,8 @@ def server_static(filepath):
 @server.route('/')
 def default() :
 	
+	# wait for a while here. To avoid errors.
+	time.sleep(1)	
         #print functions.runThisCommand('pwd')print current working directory
 	try:
 		files = os.listdir('logs/')
@@ -104,6 +106,8 @@ def default() :
 		print ' logs/ , folder not found or not allowed to read and write. Please check its existence.'
 		print sys.exc_info()
 	try:
+		CurTime = ''
+		upSysTime = ''
 		CurTime = functions.getRequiredFieldData('curtime')
 	        upSysTime = functions.getRequiredFieldData( 'upTime' )
 	        CurTime = ': %s Hrs' %CurTime    
@@ -116,6 +120,14 @@ def default() :
         
 	
 	try:
+		hostName = ''
+		kernelVersionValue = ''
+		ipAddressEth = ''
+		netMaskAddr = ''
+		nSizeofCurDisk = ''
+		nSizeUsed = ''
+		nSizeNotUsed = ''
+		
 	        hostName = functions.getRequiredFieldData( 'host' )        
 	        kernelVersionValue =  functions.getRequiredFieldData( 'kernel')        
 	        ipAddressEth0 = functions.getRequiredFieldData( 'ipaddr' )
@@ -146,8 +158,8 @@ def download(filename) :
 		pids = str(commands.getoutput("ps -aux | grep logger"))
 		proc_data = re.search(r"root\s+(\w+)", pids)
 		#for this condition, logger must be running, else it will pick wring pid.
-		os.kill(int(proc_data.group(1)), signal.SIGUSR1)
-		sleep( 10  )# wait for few seonds say for 10, and let the logger do its work. Logger will start logging at pont when it gets SIGUSR1 signal.
+		#os.kill(int(proc_data.group(1)), signal.SIGUSR1)
+		#time.sleep( 10  )# wait for few seonds say for 10, and let the logger do its work. Logger will start logging at pont when it gets SIGUSR1 signal.
 		conFigs = ConfigParser.ConfigParser()
 		conFigs.read("settings.cfg")
 		dwn_gpioLed = str(conFigs.get("generic_config","dwn_gpio"))
@@ -214,7 +226,6 @@ def save_config() :
 		configBefore = ConfigParser.ConfigParser()
 		configBefore.read("settings.cfg")
 	except:
-		print ' error caused due to: file not found settings.cfg, please check its existence.'
 		print sys.exc_info()
 	try:
         	configParsingInst = ConfigParser.ConfigParser()

@@ -7,6 +7,16 @@ import signal
 import functions
 
 openPortFlag = 1# always On
+writeNowFlag = 0# always zero
+
+def MonitorPort(portPath, baudRate, timeout=1):
+	try:
+		isOpenPath = serial.Serial(portPath, baudRate, timeout)
+		#if this successfullopens the port then return true;
+		return 1
+	except:
+		return 0	
+
 class allPortDevice(threading.Thread):
         
         def __init__(self, mgpioLed, isOnState):
@@ -48,7 +58,8 @@ class logger_thread(threading.Thread):
 		
 
 	def run(self):
-		global openPortFlag 
+		global openPortFlag
+		global writeNowFlag
 		try:
 			baud = int(baudrate)
 		except:
@@ -58,36 +69,76 @@ class logger_thread(threading.Thread):
 			# timeout is necessary
 			#print openPortFlag
 			infile = serial.Serial(self.port, baud, timeout=1)
+			infile.open()#open port now.
+			# Toggle DTR to reset Arduino
+			infile.setDTR(False)
+			sleep(1)
+			# toss any data already received, see
+			infile.flushInput()
+			infile.setDTR(True)
+			infile.flush()
 			openPortFlag = 1
 			print "      " + self.dumpfile+" : Port opened successfully which is on port" + self.port
 		except:
 			print "      " + self.dumpfile+": Device not detected on  " + self.port
 			openPortFlag = 0 #false
-			#print "      " + str( openPortFlag )
-			# infile = os.open("/dev/ttyUSB0", os.O_NONBLOCK | os.O_RDONLY)
-			# print "opening /dev/ttyUSB0 for now"
-			return
-
-		try:
-			outfile = open(os.path.join("./logs/", self.dumpfile+".log"), "a+")
+			# do not return from here...
+			#keep polling after an interval of time.
+			print "      waiting for " + self.port + " to attach." 
+			while MonitorPort( self.port, baud, 1) == 0:
+				sleep(1)#sleep for 1 second then again look for the port.
+				#if port found then dont wait and start logging.
 			
-		except:
-			print "   " + self.dumpfile+":Error opening output file"
-			return
+			infile = serial.Serial(self.port, baud, timeout=3)
+			infile.open()#open and then start reading data from the source
+			openPortFlag = 1
+			print "        " + self.dumpfile + " :Port opened successfullly, which is on port " + self.port
+			#although, if error occurs here then it cannot be handled.
+			#and do not return from here, let the execution goes ahead.
+		
 
 		buf=''
 		tmplen = 0
 		return_flag = False
 		while True:
-			tmp = infile.read(100)
-			tmplen = tmplen + len(tmp)
-			buf = ''.join([buf, tmp])
-			if tmplen > 4096*4:
-				written = outfile.write(buf)
-				tmplen = 0
-				buf=''
-			else:
-				pass
+			try:
+				outfile = open(os.path.join("./logs/", self.dumpfile+".log"), "a+")
+			
+			except:
+				print "   " + self.dumpfile+":Error opening output file"
+				return
+			try:
+				tmp = infile.read(100)
+				tmplen = tmplen + len(tmp)
+				buf = ''.join([buf, tmp])
+				if(writeNowFlag == 1):
+					print "now going to write to file before downloading."
+					buf = "["+buf+"]"
+					written = outfile.write(buf)
+					outfile.close()
+					tmplen = 0
+					buf=''
+					writeNowFlag = 0
+				if tmplen > 4096*4:
+					print "now going to write to file before downloading."
+					buf = "["+buf+"]"
+					written = outfile.write(buf)
+					outfile.close()
+					tmplen = 0
+					buf=''					
+				else:
+					pass
+			except:
+				print 'Waiting for port to reconnect ' + self.port
+				while MonitorPort( self.port, baud, 1) == 0:
+					sleep(1)#sleep for 1 second then again look for the port.
+				infile = serial.Serial(self.port, baud, timeout=2)
+				infile.open()#open and then start reading data from the source
+				infile.flush()
+				print ' Device reconnected now... :' + self.port
+				print '        resuming with the device...'
+				continue
+					
 
 			if not lock.acquire(False):
 				pass
@@ -101,10 +152,9 @@ class logger_thread(threading.Thread):
 					outfile.close()
 					return_flag = True
 				finally:
-					lock.release()
-
-			if return_flag == True:
-				return
+					lock.release()	
+		if return_flag == True:
+			return
 
 class logNow(threading.Thread):
 
@@ -115,26 +165,8 @@ class logNow(threading.Thread):
 		self.dumpfile = dumpfile
 
 	def run(self):
-		global openPortFlag 
-		try:
-			baud = int(baudrate)
-		except:
-			baud = 115200
-		
-		try:
-			# timeout is necessary
-			#print openPortFlag
-			infile = serial.Serial(self.port, baud, timeout=1)
-			openPortFlag = 1
-			print "      " + self.dumpfile+" : Port opened successfully which is on port" + self.port
-		except:
-			print "      " + self.dumpfile+": Device not detected on  " + self.port
-			openPortFlag = 0 #false
-			#print "      " + str( openPortFlag )
-			# infile = os.open("/dev/ttyUSB0", os.O_NONBLOCK | os.O_RDONLY)
-			# print "opening /dev/ttyUSB0 for now"
-			return
-
+		global openPortFlag
+		global writeNowFlag
 		try:
 			outfile = open(os.path.join("./logs/", self.dumpfile+".log"), "a+")
 			
@@ -143,35 +175,11 @@ class logNow(threading.Thread):
 			print sys.exc_info()
 			return
 
-		buf=''
-		tmplen = 0
-		return_flag = False
+		try:
+			
+		except:
+			
 
-		tmp = infile.read(100)
-		tmplen = tmplen + len(tmp)
-		buf = ''.join([buf, tmp])
-		print 'execution point goes from here...'
-		#buf.join("this is from my side")
-		buf = buf + "Writting to file now."		
-		if tmplen > 4096*4:
-			written = outfile.write(buf)
-			tmplen = 0
-			buf=''
-		else:
-			if tmplen > 0:
-				writtem = outfile.write(buf)
-				tmplen = 0
-				buf = ''
-				print 'Written whatever left in buffer to respective file'
-			else:
-				print 'Buffer is empty hence nothing to write.'
-
-		# just write for once and exit from thread, hence no thread will be left running.
-		tmplen = 0
-		buf=''
-		infile.close()
-		outfile.close()
-		return_flag = True
 		return
 
 
@@ -183,6 +191,7 @@ def signal_handler(signal, frame):
 
 def writeBeforeDownload_Handler(signal, frame):
 	print 'signal received to write on log now, one by one...'
+	print 'Please wait while ogs are written, if left.'
 	## call logger thread for log and then download.
 	try:
 		config = ConfigParser.ConfigParser()
