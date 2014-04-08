@@ -6,8 +6,13 @@ import serial
 import signal
 import functions
 
+threadLocal = threading.local()
+#created dictionary 
+
 openPortFlag = 1# always On
-writeNowFlag = 0# always zero
+
+thread_list = []
+
 
 def MonitorPort(portPath, baudRate, timeout=1):
 	try:
@@ -15,7 +20,8 @@ def MonitorPort(portPath, baudRate, timeout=1):
 		#if this successfullopens the port then return true;
 		return 1
 	except:
-		return 0	
+		return 0
+
 
 class allPortDevice(threading.Thread):
         
@@ -55,11 +61,14 @@ class logger_thread(threading.Thread):
 		self.port = port
 		self.baudrate = baudrate
 		self.dumpfile = dumpfile
-		
+		self.writeNow = 0
+	
+	def setWriteFlag(self):
+		self.writeNow = 1		
 
 	def run(self):
 		global openPortFlag
-		global writeNowFlag
+
 		try:
 			baud = int(baudrate)
 		except:
@@ -108,24 +117,17 @@ class logger_thread(threading.Thread):
 				print "   " + self.dumpfile+":Error opening output file"
 				return
 			try:
-				tmp = infile.read(100)
+				tmp = infile.read(100)				
 				tmplen = tmplen + len(tmp)
 				buf = ''.join([buf, tmp])
-				if(writeNowFlag == 1):
-					print "now going to write to file before downloading."
-					buf = "["+buf+"]"
-					written = outfile.write(buf)
-					outfile.close()
-					tmplen = 0
-					buf=''
-					writeNowFlag = 0
-				if tmplen > 4096*4:
-					print "now going to write to file before downloading."
+									
+				if tmplen > 4096*4 or self.writeNow == 1:
 					buf = "["+buf+"]"
 					written = outfile.write(buf)
 					outfile.close()
 					tmplen = 0
 					buf=''					
+										
 				else:
 					pass
 			except:
@@ -156,33 +158,6 @@ class logger_thread(threading.Thread):
 		if return_flag == True:
 			return
 
-class logNow(threading.Thread):
-
-	def __init__(self, port, baudrate, dumpfile):
-		threading.Thread.__init__(self)
-		self.port = port
-		self.baudrate = baudrate
-		self.dumpfile = dumpfile
-
-	def run(self):
-		global openPortFlag
-		global writeNowFlag
-		try:
-			outfile = open(os.path.join("./logs/", self.dumpfile+".log"), "a+")
-			
-		except:
-			print "   " + self.dumpfile+":Error opening output file"
-			print sys.exc_info()
-			return
-
-		try:
-			
-		except:
-			
-
-		return
-
-
 def signal_handler(signal, frame):
 	print 'You pressed Ctrl+C'
 	lock.release()
@@ -190,37 +165,14 @@ def signal_handler(signal, frame):
 	sys.exit(0)
 
 def writeBeforeDownload_Handler(signal, frame):
-	print 'signal received to write on log now, one by one...'
-	print 'Please wait while ogs are written, if left.'
+	global thread_list	
+	
 	## call logger thread for log and then download.
-	try:
-		config = ConfigParser.ConfigParser()
-		config.read('settings.cfg')#this closes the config file after read.
-	except:
-		print ' settngs.cfg file not found or opended already.'
-		print sys.exc_info()
-
-	for section in config.sections():
-		port = ''
-		dumpfile = ''
-		try:
-			port = config.get(section, 'device')
-		except:
-			continue
-		try:
-			baudrate = config.get(section, 'baudrate')
-		except:
-			baudrate =115200
-		try:
-			gpioOf = config.get(section, 'gpio')
-		except:
-			continue
-
-		t = logNow(port, baudrate, section)
-		t.start()
-		# shoot thread and let them write...one by one.
-		#this thread exits after writting to file from buffer.
-
+	
+	nThLen = len(thread_list)	
+	for i in range(nThLen):
+		thread_list[i].setWriteFlag()
+	
 
 if __name__ == "__main__":
 	# Main Runtime parse config and dump in file
@@ -249,8 +201,8 @@ if __name__ == "__main__":
 	except:
 		print '     settings.cfg not found in current drive. Please place settings.cfg at correct place.'
 		print sys.exc_info()
-
-	thread_list = []
+	#thread_list = []
+	global thread_list 
 	gpioLED_list = []
 	
 	lock = threading.Lock()

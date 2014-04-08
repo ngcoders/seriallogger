@@ -158,7 +158,7 @@ def download(filename) :
 		pids = str(commands.getoutput("ps -aux | grep logger"))
 		proc_data = re.search(r"root\s+(\w+)", pids)
 		#for this condition, logger must be running, else it will pick wring pid.
-		#os.kill(int(proc_data.group(1)), signal.SIGUSR1)
+		os.kill(int(proc_data.group(1)), signal.SIGUSR1)
 		#time.sleep( 10  )# wait for few seonds say for 10, and let the logger do its work. Logger will start logging at pont when it gets SIGUSR1 signal.
 		conFigs = ConfigParser.ConfigParser()
 		conFigs.read("settings.cfg")
