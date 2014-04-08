@@ -122,7 +122,6 @@ class logger_thread(threading.Thread):
 				buf = ''.join([buf, tmp])
 									
 				if tmplen > 4096*4 or self.writeNow == 1:
-					buf = "["+buf+"]"
 					written = outfile.write(buf)
 					outfile.close()
 					tmplen = 0
