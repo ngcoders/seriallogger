@@ -32,9 +32,9 @@ SerialLogger
 + Disable dhcp in raspberry pi, so the static configuration will take over.
 	- go to /etc/network/interface file.
 	- using any file editor, under root, 
-	- change the <iface eth0 inet dhcp> to <iface eth0 inet static>
+	- change the "iface eth0 inet dhcp" to "iface eth0 inet static"
 	- save.
-	Rest of the configuration will be done by other scripts on the basis of netConfig.dat content.
+	- Rest of the configuration will be done by other scripts on the basis of netConfig.dat content.
 
 + If required,
 	- Set up bits of file for execution
