@@ -30,8 +30,8 @@ def getRequiredFieldData( sCommandPlease ):
 def getTheUpTimePlease():
        
     uptime_fromHere = str(commands.getoutput('cat /proc/uptime') )    ## redirecting o/p channel and taking directly in from here.
-    varForTimeNow = re.search( r"[0-9]+", uptime_fromHere)        
-    m, s = divmod(int(varForTimeNow.group()), 60)
+    varForTimeNow = re.search( r"([0-9]+)", uptime_fromHere)        
+    m, s = divmod(int(varForTimeNow.group(1)), 60)
     h, m = divmod(m, 60)
     varForTime = "%d:%d:%d" %(h,m,s)
     return varForTime
