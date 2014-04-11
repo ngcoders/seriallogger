@@ -29,8 +29,8 @@ def getRequiredFieldData( sCommandPlease ):
 
 def getTheUpTimePlease():
        
-    uptime_fromHere = str(commands.getoutput('cat /proc/uptime') )    ## redirecting o/p channel and taking directly in from here.
-    varForTimeNow = re.search( r"([0-9]+)", uptime_fromHere)        
+    uptime_fromHere = str(commands.getoutput('cat /proc/uptime') )    ## redirecting o/p channel and taking directly in from here.	
+    varForTimeNow = re.search( r"([0-9]+)", uptime_fromHere)       
     m, s = divmod(int(varForTimeNow.group(1)), 60)
     h, m = divmod(m, 60)
     varForTime = "%d:%d:%d" %(h,m,s)
@@ -38,17 +38,14 @@ def getTheUpTimePlease():
 
 def getTheCurTimePlease():
 
-    uptime_fromHere = str(commands.getoutput('uptime') )    ## redirecting o/p channel and taking directly in from here.
- 
+    uptime_fromHere = str(commands.getoutput('uptime') )    ## redirecting o/p channel and taking directly in from here. 
     varForNow = re.search(r"([0-9]+:[0-9]+:[0-9]+)", uptime_fromHere)
-    
     return varForNow.group(1)#time
 
 def getTheKernelPlease():
 
     Data_fromHere = str(commands.getoutput('uname -r'))
     #varForNow = re.search(r"(\w+)\s+(\w+)\s+(\w+.\w+.\w+-\w+-\w+\w+?)", Data_fromHere)
-        
     return ": %s"%(Data_fromHere)
 
 def getTheHostNamePlease():
@@ -60,20 +57,20 @@ def getTheHostNamePlease():
 def getToTalSpacePlease():
 
     varData_Temp = str(commands.getoutput('df -h ./ | grep root'))          # this will give a single line output as it is been requested for the current path.
-    varForNow = re.search (r"(([0-9]+)\w+)\s+(([0-9]+)\w+)\s+(([0-9]+)\w+)",varData_Temp)
+    varForNow = re.search (r"(([0-9]+)\w+)\s+(([0-9]+)\w+)\s+(([0-9]+)?\w+)",varData_Temp)
             
     return varForNow.group(1)
 
 def getFreeSpacePlease():
     varData_Temp = str(commands.getoutput('df -h ./ | grep root'))          # this will give a single line output as it is been requested for the current path.
-    varForNow = re.search (r"(([0-9]+)\w+)\s+(([0-9]+)\w+)\s+(([0-9]+)\w+)",varData_Temp)
+    varForNow = re.search (r"(([0-9]+)\w+)\s+(([0-9]+)\w+)\s+(([0-9]+)?\w+)",varData_Temp)
     
     return  varForNow.group(5)
 
 def getUsedSpacePlease():
     
     varData_Temp = str(commands.getoutput('df -h ./ | grep root'))          # this will give a single line output as it is been requested for the current path.
-    varForNow = re.search (r"(([0-9]+)\w+)\s+(([0-9]+)\w+)\s+(([0-9]+)\w+)",varData_Temp)
+    varForNow = re.search (r"(([0-9]+)\w+)\s+(([0-9]+)\w+)\s+(([0-9]+)?\w+)",varData_Temp)
     
     return varForNow.group(3)    
 

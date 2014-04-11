@@ -99,34 +99,25 @@ def default() :
         #print functions.runThisCommand('pwd')print current working directory
 	try:
 		files = os.listdir('logs/')
-		hostName = kernelVersionValue = ipAddressEth = netMaskAddr = nSizeofCurDisk ='na'
+		hostName = kernelVersionValue = ipAddressEth0 = netMaskAddr = nSizeofCurDisk ='na'
 		nSizeUsed = nSizeNotUsed = 'na'
 		#declaring default values...
 	except:
 		print ' logs/ , folder not found or not allowed to read and write. Please check its existence.'
 		print sys.exc_info()
 	try:
-		CurTime = ''
-		upSysTime = ''
+		CurTime = 'na'
+		upSysTime = 'na'
 		CurTime = functions.getRequiredFieldData('curtime')
-	        upSysTime = functions.getRequiredFieldData( 'upTime' )
+		upSysTime = functions.getRequiredFieldData( 'upTime' )
 	        CurTime = ': %s Hrs' %CurTime    
-	        upSysTime = ": %s Hrs"%upSysTime
-		
+        	upSysTime = ": %s Hrs"%upSysTime
 	except:
-		print ' Something went wrong, getting current time/getting uptime. Please check parsing.'
-		print sys.exc_info()
-
+		print '   Something went wrong. Please check for curTime/Uptime parsing.'
+		print sys.exc_info()		
         
 	
 	try:
-		hostName = 'na'
-		kernelVersionValue = 'na'
-		ipAddressEth0 = 'na'
-		netMaskAddr = 'na'
-		nSizeofCurDisk = 'na'
-		nSizeUsed = 'na'
-		nSizeNotUsed = 'na'
 		
 	        hostName = functions.getRequiredFieldData( 'host' )        
 	        kernelVersionValue =  functions.getRequiredFieldData( 'kernel')        
