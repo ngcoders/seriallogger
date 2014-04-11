@@ -42,7 +42,7 @@ def getTheCurTimePlease():
  
     varForNow = re.search(r"([0-9]+:[0-9]+:[0-9]+)", uptime_fromHere)
     
-    return varForNow.group()#time
+    return varForNow.group(1)#time
 
 def getTheKernelPlease():
 
