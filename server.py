@@ -122,7 +122,7 @@ def default() :
 	try:
 		hostName = 'na'
 		kernelVersionValue = 'na'
-		ipAddressEth = 'na'
+		ipAddressEth0 = 'na'
 		netMaskAddr = 'na'
 		nSizeofCurDisk = 'na'
 		nSizeUsed = 'na'
