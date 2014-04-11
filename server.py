@@ -120,13 +120,13 @@ def default() :
         
 	
 	try:
-		hostName = ''
-		kernelVersionValue = ''
-		ipAddressEth = ''
-		netMaskAddr = ''
-		nSizeofCurDisk = ''
-		nSizeUsed = ''
-		nSizeNotUsed = ''
+		hostName = 'na'
+		kernelVersionValue = 'na'
+		ipAddressEth = 'na'
+		netMaskAddr = 'na'
+		nSizeofCurDisk = 'na'
+		nSizeUsed = 'na'
+		nSizeNotUsed = 'na'
 		
 	        hostName = functions.getRequiredFieldData( 'host' )        
 	        kernelVersionValue =  functions.getRequiredFieldData( 'kernel')        
